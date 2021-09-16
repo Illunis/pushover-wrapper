@@ -1,22 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func getNewMessages(secret *string, deviceID *string) {
-	resp, err := http.Get("https://api.pushover.net/1/messages.json?secret=" + *secret + "&device_id=" + *deviceID)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer resp.Body.Close()
-
+func bodyParser(respBody io.ReadCloser) respJSON {
+	defer respBody.Close()
 	//We Read the response body on the line below.
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(respBody)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -25,5 +21,32 @@ func getNewMessages(secret *string, deviceID *string) {
 	jsonBody := string(body)
 	var respJSON respJSON
 	json.Unmarshal([]byte(jsonBody), &respJSON)
-	fmt.Println(respJSON.Message[len(respJSON.Message)-1])
+	return respJSON
+}
+
+func getNewMessages(secret *string, deviceID *string) respJSON {
+	resp, err := http.Get("https://api.pushover.net/1/messages.json?secret=" + *secret + "&device_id=" + *deviceID)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	respJSON := bodyParser(resp.Body)
+	return respJSON
+}
+
+func deleteLastMessage(messageID string, secret *string, deviceID *string) respJSON {
+	values := map[string]string{"secret": *secret, "message": messageID}
+	jsonData, err := json.Marshal(values)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := http.Post("https://api.pushover.net/1/devices/"+*deviceID+"/update_highest_message.json", "application/json",
+		bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	respJSON := bodyParser(resp.Body)
+	return respJSON
 }

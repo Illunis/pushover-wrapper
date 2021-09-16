@@ -39,7 +39,11 @@ func main() {
 		switch respToken {
 		case "!":
 			log.Println("Got new Message!")
-			getNewMessages(secret, deviceID)
+			resp := getNewMessages(secret, deviceID)
+			status := deleteLastMessage(resp.Message[len(resp.Message)-1].IDStr, secret, deviceID).Status
+			if status == 1 {
+				println("do something")
+			}
 		case "#":
 			log.Println("KeepAlive!")
 		default:
