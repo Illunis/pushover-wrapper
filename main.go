@@ -108,9 +108,9 @@ func main() {
 
 			//Convert the body to type string
 			jsonBody := string(body)
-			var lala respJSON
-			json.Unmarshal([]byte(jsonBody), &lala)
-			fmt.Println(lala)
+			var respJSON respJSON
+			json.Unmarshal([]byte(jsonBody), &respJSON)
+			fmt.Println(respJSON.Message[len(respJSON.Message)-1])
 		case "#":
 			log.Println("KeepAlive!")
 		default:
