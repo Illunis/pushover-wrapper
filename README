@@ -1,0 +1,8 @@
+# a simple wrapper for PushOver
+
+the wrapper holds a websocket connection to pushover. if a new message arrives, the message gets deleted and the provided API-URI gets called. simple as that
+
+flags:
+  -secret: your PushOver secret
+  -deviceID: your PushOver device ID
+  -apiURI: the URI which gets called if a new message arrives
