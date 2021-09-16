@@ -12,6 +12,7 @@ import (
 func main() {
 	deviceID := flag.String("deviceID", "", "Your Pushover device ID")
 	secret := flag.String("secret", "", "Your Pushover secret")
+	apiURI := flag.String("apiURI", "", "The Uri of the API, which gets called on new Message")
 	flag.Parse()
 
 	interrupt := make(chan os.Signal, 1)
@@ -42,7 +43,10 @@ func main() {
 			resp := getNewMessages(secret, deviceID)
 			status := deleteLastMessage(resp.Message[len(resp.Message)-1].IDStr, secret, deviceID).Status
 			if status == 1 {
-				println("do something")
+				resp := callAPI(*apiURI)
+				if resp.StatusCode == 200 {
+					log.Println("API successful called")
+				}
 			}
 		case "#":
 			log.Println("KeepAlive!")

@@ -50,3 +50,11 @@ func deleteLastMessage(messageID string, secret *string, deviceID *string) respJ
 	respJSON := bodyParser(resp.Body)
 	return respJSON
 }
+
+func callAPI(uri string) *http.Response {
+	resp, err := http.Get(uri)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return resp
+}
