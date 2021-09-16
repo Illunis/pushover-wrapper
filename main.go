@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/sacOO7/gowebsocket"
 )
@@ -66,6 +67,7 @@ func main() {
 	flag.Parse()
 
 	interrupt := make(chan os.Signal, 1)
+	closeProgramm := false
 	signal.Notify(interrupt, os.Interrupt)
 
 	socket := gowebsocket.New("wss://client.pushover.net/push")
@@ -77,6 +79,10 @@ func main() {
 
 	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
 		log.Println("Recieved connect error ", err)
+		timer := time.NewTimer(30 * time.Second)
+		<-timer.C
+		log.Println("trying to reconnect...")
+		socket.Connect()
 	}
 
 	socket.OnTextMessage = func(message string, socket gowebsocket.Socket) {
@@ -122,6 +128,12 @@ func main() {
 
 	socket.OnDisconnected = func(err error, socket gowebsocket.Socket) {
 		log.Println("Disconnected from server ")
+		if !closeProgramm {
+			timer := time.NewTimer(30 * time.Second)
+			<-timer.C
+			log.Println("trying to reconnect...")
+			socket.Connect()
+		}
 		return
 	}
 
@@ -131,6 +143,7 @@ func main() {
 		select {
 		case <-interrupt:
 			log.Println("interrupt")
+			closeProgramm = true
 			socket.Close()
 			return
 		}
