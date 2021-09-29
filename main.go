@@ -13,6 +13,7 @@ func main() {
 	deviceID := flag.String("deviceID", "", "Your Pushover device ID")
 	secret := flag.String("secret", "", "Your Pushover secret")
 	apiURI := flag.String("apiURI", "", "The Uri of the API, which gets called on new Message")
+	appName := flag.String("appName", "Pushover", "Your Pushover Application Name to listen")
 	flag.Parse()
 
 	interrupt := make(chan os.Signal, 1)
@@ -41,11 +42,17 @@ func main() {
 		case "!":
 			log.Println("Got new Message!")
 			resp := getNewMessages(secret, deviceID)
+			log.Println(resp)
 			status := deleteLastMessage(resp.Message[len(resp.Message)-1].IDStr, secret, deviceID).Status
 			if status == 1 {
-				resp := callAPI(*apiURI)
-				if resp.StatusCode == 200 {
-					log.Println("API successful called")
+				if resp.Message[len(resp.Message)-1].App == *appName {
+					resp := callAPI(*apiURI)
+					if resp.StatusCode == 200 {
+						log.Println("API successful called")
+					}
+
+				} else {
+					log.Println("Message not for me")
 				}
 			}
 		case "#":

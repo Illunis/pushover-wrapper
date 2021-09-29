@@ -1,8 +1,10 @@
 package main
 
 type messages struct {
-	ID    int    `json:"id"`
-	IDStr string `json:"id_str"`
+	ID      int    `json:"id"`
+	IDStr   string `json:"id_str"`
+	Message string `json:"message"`
+	App     string `json:"app"`
 	/*
 		"message": "This is a test alert",
 		"app": "LibreNMS Work",
@@ -22,10 +24,23 @@ type messages struct {
 	*/
 }
 
+type device struct {
+	Name string `json:"name"`
+	/*
+		"encryption_enabled": false,
+		"default_sound": "po",
+		"always_use_default_sound": false,
+		"default_high_priority_sound": "po",
+		"always_use_default_high_priority_sound": false,
+		"dismissal_sync_enabled": false
+	*/
+}
+
 type respJSON struct {
 	Message []messages `json:"messages"`
 	Status  int        `json:"status"`
 	Request string     `json:"request"`
+	Device  device     `json:"device"`
 	/*
 		"user": {
 			"quiet_hours": false,
@@ -34,15 +49,6 @@ type respJSON struct {
 			"is_desktop_licensed": true,
 			"email": "<mail>",
 			"show_team_ad": "1"
-		},
-		"device": {
-			"name": "raspberrypi",
-			"encryption_enabled": false,
-			"default_sound": "po",
-			"always_use_default_sound": false,
-			"default_high_priority_sound": "po",
-			"always_use_default_high_priority_sound": false,
-			"dismissal_sync_enabled": false
 		},
 	*/
 }
