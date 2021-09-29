@@ -5,9 +5,8 @@ type messages struct {
 	IDStr   string `json:"id_str"`
 	Message string `json:"message"`
 	App     string `json:"app"`
+	Title   string `json:"title"`
 	/*
-		"message": "This is a test alert",
-		"app": "LibreNMS Work",
 		"aid": 435443636951759403,
 		"aid_str": "435443636951759403",
 		"icon": "mnsw2ykc6qa5sbn",
@@ -16,7 +15,6 @@ type messages struct {
 		"acked": 0,
 		"umid": 502550228871720147,
 		"umid_str": "502550228871720147",
-		"title": "Testing transport from LibreNMS",
 		"url": "mailto:<mail>",
 		"url_title": "Reply to <mail>",
 		"queued_date": 1631773893,

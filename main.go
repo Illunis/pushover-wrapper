@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"regexp"
 
 	"github.com/sacOO7/gowebsocket"
 )
@@ -14,6 +15,7 @@ func main() {
 	secret := flag.String("secret", "", "Your Pushover secret")
 	apiURI := flag.String("apiURI", "", "The Uri of the API, which gets called on new Message")
 	appName := flag.String("appName", "Pushover", "Your Pushover Application Name to listen")
+	filter := flag.String("filter", "", "regex String to filter message by title")
 	flag.Parse()
 
 	interrupt := make(chan os.Signal, 1)
@@ -42,13 +44,18 @@ func main() {
 		case "!":
 			log.Println("Got new Message!")
 			resp := getNewMessages(secret, deviceID)
-			log.Println(resp)
-			status := deleteLastMessage(resp.Message[len(resp.Message)-1].IDStr, secret, deviceID).Status
+			lastMessage := resp.Message[len(resp.Message)-1]
+			status := deleteLastMessage(lastMessage.IDStr, secret, deviceID).Status
 			if status == 1 {
-				if resp.Message[len(resp.Message)-1].App == *appName {
-					resp := callAPI(*apiURI)
-					if resp.StatusCode == 200 {
-						log.Println("API successful called")
+				if lastMessage.App == *appName {
+					regex := regexp.MustCompile(*filter)
+					if regex.FindString(lastMessage.Title) == "" {
+						resp := callAPI(*apiURI)
+						if resp.StatusCode == 200 {
+							log.Println("API successful called")
+						}
+					} else {
+						log.Println("Message for me, but filtered through regex")
 					}
 
 				} else {
