@@ -24,7 +24,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		defer file.Close()
 		log.SetOutput(file)
 	}
 
