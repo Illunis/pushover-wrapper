@@ -11,12 +11,22 @@ import (
 )
 
 func main() {
-	deviceID := flag.String("deviceID", "", "Your Pushover device ID")
-	secret := flag.String("secret", "", "Your Pushover secret")
 	apiURI := flag.String("apiURI", "", "The Uri of the API, which gets called on new Message")
 	appName := flag.String("appName", "Pushover", "Your Pushover Application Name to listen")
+	deviceID := flag.String("deviceID", "", "Your Pushover device ID")
 	filter := flag.String("filter", "", "regex String to filter message by title")
+	logFile := flag.String("logFile", "", "path to optional log file")
+	secret := flag.String("secret", "", "Your Pushover secret")
 	flag.Parse()
+
+	if *logFile != "" {
+		file, err := os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.SetOutput(file)
+	}
 
 	interrupt := make(chan os.Signal, 1)
 	closeProgramm := false

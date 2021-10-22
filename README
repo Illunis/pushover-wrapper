@@ -7,4 +7,5 @@ flags:
   -appName: your PushOver application name to listen (default "Pushover")
   -deviceID: your PushOver device ID
   -filter: regex String to filter the message by title
+  -logFile: path to optinal log file
   -secret: your PushOver secret
